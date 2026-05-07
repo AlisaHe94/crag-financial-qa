@@ -1,0 +1,44 @@
+# Secrets — NEVER commit
+.env
+.env.local
+.env.*.backup
+.env.local.backup
+*.key
+*.pem
+
+# Data + indexes (regenerated from SEC EDGAR / scripts)
+data/sec_filings/
+data/vectordb/
+data/vectordb_*/
+data/eval_results.csv
+*.faiss
+*.pkl
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Streamlit
+.streamlit/secrets.toml
+streamlit.log
+
+# Build artifacts (slide images, lock files, tmp, regenerated PDFs)
+slide-*.jpg
+slide-*.png
+~$*.pptx
+~$*.docx
+.~lock.*#
+*.tmp
+# Regenerated PDFs from .pptx (LibreOffice/PowerPoint output) —
+# pattern matches Probabilistic_CRAG_Final_Presentation*.pdf etc.
+Probabilistic_CRAG_Final_Presentation*.pdf

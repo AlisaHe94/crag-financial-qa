@@ -1,0 +1,156 @@
+[
+  {
+    "id": "n1",
+    "type": 1,
+    "question": "What are the principal risk factors disclosed in Apple's fiscal year 2025 10-K?",
+    "expected_keywords": ["macroeconomic", "risk", "supply"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "n2",
+    "type": 1,
+    "question": "How does Microsoft describe its Azure business in the fiscal year 2025 10-K?",
+    "expected_keywords": ["azure", "cloud", "intelligent"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "n3",
+    "type": 1,
+    "question": "What does Alphabet say about AI competition in its 2025 10-K?",
+    "expected_keywords": ["ai", "competition", "competitive"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "n4",
+    "type": 1,
+    "question": "How does Amazon describe its AWS strategy in the 2025 10-K?",
+    "expected_keywords": ["aws", "cloud", "customer"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "n5",
+    "type": 1,
+    "question": "What does Meta say about Reality Labs investments in its 2025 10-K?",
+    "expected_keywords": ["reality labs", "investment", "metaverse"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t1",
+    "type": 3,
+    "question": "What were Apple's total net sales in fiscal year 2025?",
+    "expected_keywords": ["416", "million", "net sales"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t2",
+    "type": 3,
+    "question": "What was Apple's iPhone revenue in fiscal year 2025?",
+    "expected_keywords": ["209", "million", "iphone"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t3",
+    "type": 3,
+    "question": "What was Microsoft's revenue from Intelligent Cloud in fiscal year 2025?",
+    "expected_keywords": ["106", "intelligent cloud", "billion"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t4",
+    "type": 3,
+    "question": "What was Alphabet's Google Cloud revenue in 2025?",
+    "expected_keywords": ["cloud", "billion", "revenue"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t5",
+    "type": 3,
+    "question": "What was Amazon's AWS net sales in 2025?",
+    "expected_keywords": ["aws", "billion", "net sales"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t6",
+    "type": 3,
+    "question": "What were Meta's total advertising revenues in 2025?",
+    "expected_keywords": ["advertising", "billion", "revenue"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t7",
+    "type": 3,
+    "question": "What were Apple's net sales in the quarter ended March 28, 2026?",
+    "expected_keywords": ["quarter", "billion", "net sales"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t8",
+    "type": 3,
+    "question": "What was Microsoft's revenue in Q3 fiscal year 2026?",
+    "expected_keywords": ["billion", "revenue", "quarter"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m1",
+    "type": 4,
+    "question": "How did Apple's iPhone revenue change between fiscal year 2024 and 2025, and what does management cite as the reason?",
+    "expected_keywords": ["iphone", "increase", "pro"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m2",
+    "type": 4,
+    "question": "How did Microsoft's Intelligent Cloud segment perform in FY2025, and what drove the change?",
+    "expected_keywords": ["intelligent cloud", "azure", "growth"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m3",
+    "type": 4,
+    "question": "What was Amazon's AWS growth rate in 2025, and how does management explain it?",
+    "expected_keywords": ["aws", "growth", "customer"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m4",
+    "type": 4,
+    "question": "How did Meta's family of apps daily active users change in 2025, and what does management say about Reality Labs spending?",
+    "expected_keywords": ["daily active", "reality labs", "billion"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m5",
+    "type": 4,
+    "question": "How did Alphabet's Search advertising revenue compare to YouTube ads in 2025, and what trends does management highlight?",
+    "expected_keywords": ["search", "youtube", "advertising"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "oc1",
+    "type": 1,
+    "question": "What is the current federal funds rate?",
+    "expected_keywords": ["%", "rate", "federal"],
+    "ground_truth_in_corpus": false
+  },
+  {
+    "id": "oc2",
+    "type": 1,
+    "question": "What is Tesla's market cap today?",
+    "expected_keywords": ["tesla", "billion", "market"],
+    "ground_truth_in_corpus": false
+  },
+  {
+    "id": "oc3",
+    "type": 1,
+    "question": "Who is the current US Treasury Secretary?",
+    "expected_keywords": ["secretary", "treasury", "bessent"],
+    "ground_truth_in_corpus": false
+  },
+  {
+    "id": "oc4",
+    "type": 1,
+    "question": "What was the S&P 500's closing price yesterday?",
+    "expected_keywords": ["s&p", "500", "points"],
+    "ground_truth_in_corpus": false
+  }
+]
