@@ -213,6 +213,14 @@ def _build_single_client(provider: str, model: Optional[str] = None):
                     {"role": "user", "content": user},
                 ],
                 max_tokens=2048,
+                # Near-deterministic outputs for the demo. Default
+                # temperature (~1.0) makes CRAG appear inconsistent
+                # across runs because each query involves multiple LLM
+                # calls (classifier, generator, completeness check,
+                # optional re-prompt). 0.05 keeps outputs effectively
+                # deterministic without the rare "empty response"
+                # edge case some providers exhibit at exactly 0.0.
+                temperature=0.05,
             )
             answer = resp.choices[0].message.content or ""
             try:
@@ -231,6 +239,7 @@ def _build_single_client(provider: str, model: Optional[str] = None):
                             {"role": "user", "content": user},
                         ],
                         max_tokens=4096,
+                        temperature=0.05,
                     )
                     answer = resp2.choices[0].message.content or answer
                 except Exception as e:

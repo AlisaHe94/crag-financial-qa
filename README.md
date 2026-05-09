@@ -229,6 +229,30 @@ Probabilistic Evaluator
 
 ---
 
+## Error Handling
+
+This project uses a mix of **fail-fast checks**, **logged degradation**, and **optional failover** so that transient external failures do not always abort the full pipeline.
+
+- **Configuration / secrets.** Missing required credentials are surfaced early where practical: e.g. `data_fetcher.py` raises if `SEC_EDGAR_USER_AGENT` is unset; `rag_baseline._build_single_client` raises if the primary provider's API key (e.g. `GROQ_API_KEY`) is missing. When an optional `LLM_FALLBACK_PROVIDER` is configured but cannot be initialized, the code logs a warning and continues with the primary client only.
+
+- **LLM calls.** The OpenAI-compatible wrapper detects output truncation (`finish_reason == "length"`) and retries once with a larger `max_tokens`; if the retry fails, the partial answer is kept and a warning is logged. When a fallback provider is enabled, **rate limits, timeouts, and common 5xx-class errors** on the primary route trigger an automatic switch to the fallback; authentication, unknown model, and other non-transient errors are **re-raised** so they are not silently masked.
+
+- **CRAG routing and auxiliary LLM steps.** Query-type classification (`_classify_query`) wraps the classifier call: on any exception or unparseable label it **defaults to** `multimodal`. HyDE generation (`_generate_hyde`) falls back to the **original question** on failure or suspiciously short output. The multimodal completeness audit (`_answer_addresses_all_parts`) uses a **fail-open** policy: if the audit LLM call errors, the pipeline assumes the answer is complete so a flaky judge does not worsen the user-facing result; the broader completeness block is also wrapped so failures **log a warning and preserve the previous answer**.
+
+- **Probabilistic retrieval scorer.** The cross-encoder path guards against **NaN / non-finite** scores by substituting a neutral value so aggregate confidence and routing remain well-defined.
+
+- **Document ingestion and indexing.** `build_index_from_dir` processes filings **per file** inside `try / except`: a corrupt or unsupported file logs a warning and is skipped instead of failing the entire index build. HTML table extraction via `pandas.read_html` returns an empty string on error so the parser can fall back to simpler paths. Missing `beautifulsoup4` for HTML filings raises a clear `ImportError` with install instructions.
+
+- **Web search tier.** If `TAVILY_API_KEY` is unset, `WebSearchFallback` logs a warning and returns **no web passages** (corpus-only behavior) instead of crashing at initialization.
+
+- **Batch evaluation.** `evaluate.run_condition` catches **per-question** query failures, records an empty answer for that row, and continues the ablation. `run_ablation` wraps each **condition** so one failed configuration does not prevent writing partial results; results are flushed to CSV incrementally where possible.
+
+- **Smoke test.** `smoke_test.py` validates Groq connectivity with explicit exit codes and hints when the model id is deprecated or unavailable.
+
+Together, these behaviors prioritize **continued operation with degraded features** (skip bad filings, fall back to simpler retrieval text, optional second LLM provider) while still **failing loudly** on missing mandatory configuration for the task at hand (e.g. SEC user-agent, primary LLM key).
+
+---
+
 ## References
 
 - Gondhalekar, Patel, Yeh (2025). *MultiFinRAG*. arXiv:2506.20821

@@ -42,3 +42,16 @@ slide-*.png
 # Regenerated PDFs from .pptx (LibreOffice/PowerPoint output) —
 # pattern matches Probabilistic_CRAG_Final_Presentation*.pdf etc.
 Probabilistic_CRAG_Final_Presentation*.pdf
+
+# Internal logs and test outputs (do not ship)
+*.log
+alpha_quick.log
+consistency.log
+qual_eval.log
+streamlit.log
+test_*.log
+qualitative_eval_output.md
+alpha_sensitivity_answers.md
+
+*.bak
+.env.bak
