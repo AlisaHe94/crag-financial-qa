@@ -223,6 +223,8 @@ Probabilistic Evaluator
                         [Tier 3] Tavily web search → Generate answer
 ```
 
+<img width="928" height="469" alt="image" src="https://github.com/user-attachments/assets/99bce838-bd7c-4bff-82e4-2d2a289c39e1" />
+
 ---
 
 ## References
