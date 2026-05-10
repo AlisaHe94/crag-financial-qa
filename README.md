@@ -62,11 +62,27 @@ The 22-question v1 run is preserved in [`v1/`](./v1/) as a historical first pass
 ```
 STAT 5293 Proj Proposal/
 ├── README.md              # this file (project overview + headline results)
+├── LICENSE                # MIT license
 ├── AI_USAGE.md            # GenAI tool disclosure
 ├── prompts/               # per-component prompt summaries (one file per code module)
 ├── requirements.txt       # Python dependencies (shared across all three versions)
 ├── .env.example           # template for API keys + threading-safety env vars
-├── data/                  # SEC filings + FAISS indexes + eval result CSVs (gitignored)
+├── .github/
+│   └── workflows/         # GitHub Actions CI: pytest matrix + ruff lint + schema validation
+├── tests/                 # pytest unit tests for shared helpers (bootstrap CI, KHR,
+│   │                      #   numerical fidelity, multi-score parser, eval-questions schema)
+│   └── README.md
+├── notebooks/
+│   └── results_analysis.ipynb   # v1/v2/v3 ablation analysis: KHR + bootstrap CIs,
+│                                #   v2→v3 deltas, edge-case drill-down, latency analysis
+├── data/                  # SEC filings + FAISS indexes + eval result CSVs (large files
+│   │                      #   gitignored; committed CSVs hold the headline ablation results)
+│   ├── eval_questions.json
+│   ├── eval_results_v1_22q.csv
+│   ├── eval_results_v1_44q.csv (+ _judged.csv)
+│   ├── eval_results_v2_websnoise.csv
+│   ├── eval_results_v3_judged.csv
+│   └── backups/
 ├── v1/                    # original Probabilistic CRAG (baseline)
 │   ├── crag_pipeline.py
 │   ├── rag_baseline.py
@@ -86,7 +102,7 @@ STAT 5293 Proj Proposal/
     └── README.md
 ```
 
-Each version folder is self-contained and runnable from its own directory. Shared infrastructure (corpus + dependencies + AI documentation) lives at the repository root and is referenced by all three.
+Each version folder is self-contained and runnable from its own directory. Shared infrastructure (corpus + dependencies + tests + CI + analysis notebook + AI documentation) lives at the repository root and is referenced by all three.
 
 ---
 
@@ -274,6 +290,8 @@ Thresholds are set in `.env` and can be adjusted without code changes:
 
 ## Architecture Overview
 
+### v1 — Probabilistic CRAG baseline (3-tier fallback)
+
 ```
 Query
   │
@@ -286,7 +304,7 @@ Query
   │  combine text + table chunks
   ▼
 Probabilistic Evaluator
-  score = α·cosine + (1−α)·sigmoid(cross_encoder_logit)
+  score = α·cosine + (1−α)·sigmoid(cross_encoder_logit)   (α = 0.4)
   │
   ├─ score ≥ τ_high  →  CORRECT   → Generate answer
   ├─ τ_low ≤ score   →  AMBIGUOUS → Rewrite query → Re-retrieve → Generate
@@ -298,6 +316,44 @@ Probabilistic Evaluator
 
 <img width="935" height="467" alt="image" src="https://github.com/user-attachments/assets/8e41f87f-efa6-4d91-8eb9-8522786093da" />
 
+
+### v2 / v3 — Consistency interventions on top of v1
+
+v2 and v3 wrap the v1 three-tier flow with a decomposition layer (for multimodal queries) and two post-hoc consistency checks. The architectural difference between v2 and v3 is **one keyword argument**: `_suppress_web=True` on the inner CRAG calls inside the decomposition loop, which prevents sub-questions from triggering their own web fallback.
+
+```
+Query
+  │
+  ▼
+[Modality classifier] — text-only / table-only / multimodal
+  │
+  ├─ multimodal? ──Yes──► [Modality-aware decomposition]
+  │                          • split into text-side and table-side sub-questions
+  │                          • run each sub-q through the v1 three-tier flow
+  │                              ├── v2: sub-q can hit Tier 3 (Tavily web)   ← web noise
+  │                              └── v3: _suppress_web=True (corpus-bound)   ← the v2→v3 fix
+  │                          • fuse sub-answers into a single response
+  │
+  └─ single-modality? ──► v1 three-tier flow directly
+  ▼
+Draft answer
+  │
+  ▼
+[Per-sub-question coverage check]    (FinVet-style claim verification)
+  │  ├─ does the answer address every sub-question?
+  │  └─ flag any sub-q whose claims aren't grounded in retrieved chunks
+  ▼
+[Numerical fidelity check]           (DANA-inspired post-hoc verification)
+  │  ├─ extract every $ / % / ratio in the draft answer
+  │  ├─ normalize ($ + commas + units) and search retrieved chunks
+  │  └─ flag any number not directly grounded
+  ▼
+Final answer + telemetry
+  (routing_decision, confidence_score, tier_used,
+   sub_q_coverage, numerical_fidelity, α used)
+```
+
+**v2-only / v3-only details:** v2 retains web fallback for decomposed sub-questions (web noise can leak into multimodal answers); v3 suppresses it. Both versions also ship an **α-ensemble inference** mode (`v2/scripts/alpha_ensemble.py`, same in v3) that runs the evaluator across α ∈ {0.0, 0.2, 0.4, 0.6, 0.8, 1.0} and reports stability buckets — useful for understanding how robust each routing decision is to the cosine ↔ cross-encoder weighting choice. See [`v2/README.md`](./v2/README.md) and [`v3/README.md`](./v3/README.md) for run-time details and the corresponding scripts.
 
 ---
 
