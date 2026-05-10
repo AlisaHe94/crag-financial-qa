@@ -47,9 +47,13 @@ Each version is self-contained and independently runnable. v2 and v3 share most 
 
 The v3 fix improved every secondary metric while keeping KHR essentially flat — confirming that web noise was contributing to lower routing precision and fidelity, not to the headline accuracy result.
 
-### Note on v1 results
+### Eval bank evolution (22 → 44 questions)
 
-**v1 was not re-evaluated on the expanded 44-question eval bank.** The v1 numbers reported in our class presentation and demonstrated in the live demo correspond to the original 22-question eval set that v1 was developed against, and those numbers remain the canonical v1 results we have publicly committed to. Re-running v1 against the larger 44-question bank would have changed the denominator on which v1's behavior was characterized, and we judged it cleaner to (a) leave v1's reported numbers tied to the eval bank it was originally measured on, and (b) measure the iteration (v2 → v3) on the expanded bank where the additional 22 edge-case questions specifically probe failure modes that motivated the iteration. The two reports are therefore not directly comparable cell-by-cell, but both are reproducible from their respective version folders ([`v1/`](./v1/) for the 22-question presentation/demo numbers; [`v2/`](./v2/) and [`v3/`](./v3/) for the 44-question iteration ablation).
+The headline numbers above are the **canonical results** for this project, measured on the 44-question eval bank.
+
+The eval bank started at **22 questions**, and v1 was originally evaluated on that bank — those are the numbers shown in our class presentation and the live demo. Inspecting the 22-question results made it clear that 22 questions was not enough: failure modes we cared about (multimodal queries mixing narrative and tabular evidence, partial-out-of-corpus questions, dollar/percentage hallucination patterns) were underrepresented or missing entirely, and several question-type cells had too few examples to draw any conclusion at all. That observation is what motivated **expanding the eval bank to 44 questions** with explicit edge-case categories (n ≥ 2 per category) before the v2 → v3 iteration was run.
+
+The 22-question v1 run is preserved in [`v1/`](./v1/) as a historical first pass — it is the artifact that surfaced the eval-bank limitation in the first place, not a number we still defend. v1 was not re-run on the 44-question bank because the v2 → v3 iteration ablation is end-to-end on the same 44-question denominator and that is what the secondary metrics (routing precision, numerical fidelity, sub-question coverage) need a consistent denominator for. Going forward, treat **44q as the eval bank for this project**.
 
 ---
 
