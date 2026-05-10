@@ -1,0 +1,108 @@
+alpha,question_id,question_type,khr,latency_ms,ground_truth_in_corpus,error,answer_snippet
+0.0,n1,1,0.6666666666666666,29018.610334023833,True,,"The principal risk factors for Apple as disclosed in the fiscal year 2025 10-K are discussed under the heading ""Risk Factors"" in Part I, Item 1A of the 2025 Form 10-K. However, the provided text does "
+0.0,n2,1,0.6666666666666666,9324.098584009334,True,,"In fiscal year 2025, Microsoft describes its Azure business as a component of its ""Service and other revenue,"" which includes sales from cloud-based solutions providing software, services, platforms, "
+0.0,n3,1,1.0,14552.725832909346,True,,"In its 10-K filing for the fiscal year ended December 31, 2025, filed on February 4, 2026, Alphabet discusses AI competition within its ""ITEM 1A. RISK FACTORS"" section, stating the following:
+
+*   AI "
+0.0,n4,1,0.6666666666666666,10786.749207880348,True,,"The provided ""Amazon.com Annual Report for fiscal year ending December 31, 2025 - Form 10-K"" discusses various factors that could affect actual results and outcomes, including ""the rate of growth of t"
+0.0,n5,1,1.0,37447.332500014454,True,,"Meta states that its investments in Reality Labs reduced its overall operating profit by approximately $19.19 billion for fiscal year 2025, as cited in SEC filing 0001628280-26-028526. Reality Labs' i"
+0.0,t1,3,1.0,6871.068040840328,True,,"Apple's total net sales were $416,161 million for fiscal year 2025, according to the ""Performance"" section in the TABLE from data/sec_filings/sec-edgar-filings/AAPL/10-K/0000320193-25-000079/full-subm"
+0.0,t2,3,1.0,4041.6472079232335,True,,"Apple's iPhone net sales were $209,586 million for fiscal year 2025, according to the ""Products and Services Performance"" table from the Apple Inc. 2025 Form 10-K filing."
+0.0,t3,3,0.3333333333333333,21976.44120804034,True,,"Microsoft's revenue from Intelligent Cloud for fiscal year 2025 was $13,683 million. This information is found in the table from `data/sec_filings/sec-edgar-filings/MSFT/10-K/0000950170-25-100235/full"
+0.0,t4,3,0.6666666666666666,6114.295749925077,True,,"Alphabet's Google Cloud revenue was $58,705 million for fiscal year 2025, according to the table in the section dated December 31, 2025, from the 10-K filing 0001652044-26-000018."
+0.0,t5,3,0.6666666666666666,7468.291665893048,True,,"Amazon's AWS net sales for fiscal year 2025 were $45,606 million. This information is found in a table within the 10-K filing dated 2026."
+0.0,t6,3,0.6666666666666666,2992.245625006035,True,,"Meta's total advertising revenues for 2025 were $196,175 million."
+0.0,t7,3,0.3333333333333333,6436.205083038658,True,,"Apple's total net sales for the three months ended March 28, 2026, were $111,184 million, as stated in ""Note 2 – Revenue"" of the Q2 2026 Form 10-Q filing."
+0.0,t8,3,0.6666666666666666,28618.77475003712,True,,"Microsoft's revenue for fiscal year 2026 was $82,886, according to information from the SEC filing `data/sec_filings/sec-edgar-filings/MSFT/10-Q/0001193125-26-191507/full-submission.txt`. This figure "
+0.0,m1,4,1.0,17154.74595897831,True,,"Apple's iPhone revenue increased by $8,403 million, from $201,183 million for fiscal year 2024 to $209,586 million for fiscal year 2025, representing a 4% increase. This increase was due to higher net"
+0.0,m2,4,0.3333333333333333,34356.47179209627,True,,"Microsoft's Intelligent Cloud segment reported revenue of **$13,683 million for fiscal year 2025**. Furthermore, as of the period ending June 30, 2025, this segment reported **$14,022 million** in rev"
+0.0,m3,4,0.6666666666666666,14802.951249992475,True,,"Amazon's AWS sales increased by 20% in fiscal year 2025, compared to the prior year. This information is from the ""Operating Expenses Information"" section of the 10-K filing dated 2026.
+
+Regarding man"
+0.0,m4,4,1.0,629540.257750079,True,,"Based on the information available, Meta's family of apps daily active users showed a slight decrease from Q4 2025 to Q1 2026, with 3.58 billion daily active users in the former and 3.56 billion in th"
+0.0,m5,4,0.0,43698.616958921775,True,"('Connection aborted.', OSError(49, ""Can't assign requested address""))",
+0.0,oc1,1,1.0,1588.1337500177324,False,,"The current federal funds rate is 3.50% to 3.75%, according to the Federal Open Market Committee (FOMC), and the effective federal funds rate is at 3.64%. However, the most recent and specific update "
+0.0,oc2,1,0.6666666666666666,5434.243999887258,False,,"Based on the provided context, Tesla, Inc.'s market capitalization today is approximately $1.61 trillion.
+
+Specifically:
+*   TradingView states Tesla, Inc. has a market capitalization of $1.61 trillio"
+0.0,oc3,1,1.0,5018.153415992856,False,,"The current US Treasury Secretary is Scott Bessent. He was sworn in as the 79th Secretary of the Treasury of the United States on January 28, 2025, according to information from https://home.treasury."
+0.0,oc4,1,0.6666666666666666,4031.4619580749422,False,,"The S&P 500's closing price yesterday, May 7, 2026, was 7,337.11, as indicated by the ""Prior Close"" figure from WSJ and ""Prev Close"" from CNBC. This can be found in the ""Historical Prices"" section on "
+0.4,n1,1,0.3333333333333333,17771.466207923368,True,,"The principal risk factors vary depending on the context; however, according to general financial terminology, the term ""principal risk"" generally refers to the danger that an investor may lose their "
+0.4,n2,1,1.0,14144.318917067721,True,,"Microsoft describes its Azure business as a comprehensive set of cloud services that offers developers, IT professionals, and enterprises the freedom to build, deploy, and manage applications on any p"
+0.4,n3,1,1.0,11074.084124993533,True,,"In its 2025 10-K filing, Alphabet discusses AI competition within the context of its overall competitive landscape and specific challenges related to AI technology.
+
+Alphabet states that the company f"
+0.4,n4,1,0.3333333333333333,11126.57470908016,True,,"Amazon's 2025 SEC report, specifically the Annual Report on Form 10-K for the year ended December 31, 2025, describes its AWS strategy as serving ""developers and enterprises of all sizes"" by offering "
+0.4,n5,1,1.0,12717.940125148743,True,,"In its 2025 Form 10-K, Meta Platforms, Inc. states that its financial results are reported based on two segments, with Reality Labs (RL) including virtual and augmented reality related consumer hardwa"
+0.4,t1,3,1.0,4433.237083023414,True,,"Apple's total net sales were $416,161 million for fiscal year 2025, as stated in the 'Performance' and 'Products and Services Performance' tables from the full-submission.txt of the AAPL 2025 Form 10-"
+0.4,t2,3,1.0,3013.7554579414427,True,,"Apple's iPhone net sales were $209,586 million for fiscal year 2025. This information is from the ""Products and Services Performance"" table in the Apple Inc. 2025 Form 10-K filing."
+0.4,t3,3,0.3333333333333333,29743.115082848817,True,,"Microsoft's revenue from Intelligent Cloud was:
+
+**$14,022 million** for the fiscal period ending June 30, 2025, according to a table in the `0000950170-25-100235/full-submission.txt` SEC filing and c"
+0.4,t4,3,0.6666666666666666,10094.326792052016,True,,"Alphabet's Google Cloud revenue was $58,705 million for fiscal year 2025, according to the table in data/sec_filings/sec-edgar-filings/GOOGL/10-K/0001652044-26-000018/full-submission.txt.
+
+Separately,"
+0.4,t5,3,0.6666666666666666,8812.245125183836,True,,"Amazon's AWS net sales in 2025 were $45,606 million, according to the 10-K filing dated 0001018724-26-000004."
+0.4,t6,3,0.6666666666666666,5086.384959053248,True,,"Meta's total advertising revenues were $196,175 million for fiscal year 2025, according to the table in the SEC filing `data/sec_filings/sec-edgar-filings/META/10-K/0001628280-26-003942/full-submissio"
+0.4,t7,3,0.6666666666666666,35476.45895881578,True,,"For the quarter ended March 28, 2026, Apple's total net sales were $111,184 million, as detailed in the Q2 2026 Form 10-Q filing.
+
+Net sales by category for the three months ended March 28, 2026, were"
+0.4,t8,3,0.6666666666666666,26997.5095000118,True,,"Microsoft's revenue for fiscal year 2026 was $82,886. This figure is from a 10-Q filing from `data/sec_filings/sec-edgar-filings/MSFT/10-Q/0001193125-26-191507/full-submission.txt`. While the context "
+0.4,m1,4,1.0,14624.445874942467,True,,"Apple's iPhone revenue increased by 4% between fiscal year 2024 and fiscal year 2025. iPhone net sales were $201,183 million for fiscal year 2024 and increased to $209,586 million for fiscal year 2025"
+0.4,m2,4,1.0,41126.854666974396,True,,"Microsoft's Intelligent Cloud segment generated revenue of **$13,683 million for fiscal year 2025** as reported in the ""Intelligent Cloud, 2025"" table from `data/sec_filings/sec-edgar-filings/MSFT/10-"
+0.4,m3,4,1.0,7578.127374872565,True,,"According to the ""Net Sales"" section of the 10-K filing dated December 31, 2025, Amazon's AWS sales increased 20% in 2025 compared to the prior year. This sales growth primarily reflects increased cus"
+0.4,m4,4,1.0,36056.16554105654,True,,"Regarding Meta's family of apps daily active users change in 2025, the data indicates an increase from 3.43 billion daily active users in Q1 CY 2025 to 3.58 billion in Q4 2025, representing an increas"
+0.4,m5,4,1.0,25584.484209073707,True,,"In 2025, Alphabet's Google Search & other revenue was $50,702 million, while YouTube ads revenue was $8,927 million, as reported in a GOOGL 10-Q filing. This indicates that Google Search & other reven"
+0.4,oc1,1,1.0,5234.44987507537,False,,"The current federal funds rate is provided as both a target range and an effective rate. The target range is 3.50% to 3.75%, according to the Federal Open Market Committee (FOMC) as stated in the cont"
+0.4,oc2,1,0.6666666666666666,7885.177790885791,False,,"As of May 08, 2026, Tesla's market cap is reported as either $1.309 trillion according to macrotrends.net, or $1.61 trillion according to public.com. Another source, companiesmarketcap.com, states Tes"
+0.4,oc3,1,1.0,3011.0584169160575,False,,"The current US Treasury Secretary is Scott Bessent. He was sworn in as the 79th Secretary of the Treasury on January 28, 2025, as stated in the [Web: https://home.treasury.gov/about/general-informatio"
+0.4,oc4,1,0.6666666666666666,4073.4990001656115,False,,"The S&P 500's prior closing price was 7,337.11 USD, as of May 7, 2026, according to the ""Historical Prices"" section on wsj.com."
+0.6,n1,1,0.3333333333333333,25747.304416960105,True,,"The principal risk factors for various companies, based on the disclosed context, primarily focus on their business operations, financial results, regulatory compliance, competition, data security and"
+0.6,n2,1,0.6666666666666666,7552.65683401376,True,,"Microsoft describes its Azure business as a key component of its cloud-based solutions, which provide customers with software, services, platforms, and content. This revenue is included within ""Servic"
+0.6,n3,1,1.0,17022.559208096936,True,,"Alphabet states the following regarding AI competition in its 2025 10-K filing: The company characterizes the market for AI technology and services as highly competitive and rapidly evolving, requirin"
+0.6,n4,1,0.6666666666666666,7723.058999981731,True,,The context from the 2025 10-K filing describes the performance and operational aspects of AWS but does not explicitly detail an overarching AWS strategy. It notes that AWS sales increased by 20% for 
+0.6,n5,1,0.6666666666666666,15944.162708008662,True,,"In Meta's 2025 Form 10-K filing dated for the fiscal year ended December 31, 2025, the company states that it expects to continue making significant investments in virtual and augmented reality and ot"
+0.6,t1,3,1.0,6902.870000107214,True,,"Apple's total net sales were $416,161 million for fiscal year 2025. This information is available in the ""Performance"" table in the ""2025 Form 10-K"" filing dated [No specific date provided in context]"
+0.6,t2,3,1.0,7664.545582840219,True,,"Apple's iPhone net sales for fiscal year 2025 was $209,586 million. This information is from the ""Products and Services Performance"" table in Apple Inc.'s 2025 Form 10-K filing."
+0.6,t3,3,0.3333333333333333,7215.71350004524,True,,"Microsoft's revenue from Intelligent Cloud in fiscal year 2025 was $13,683 million, according to the table in the SEC filing `data/sec_filings/sec-edgar-filings/MSFT/10-K/0000950170-25-100235/full-sub"
+0.6,t4,3,0.6666666666666666,9861.934958025813,True,,"Alphabet's Google Cloud revenue for fiscal year 2025 was $58,705 million. This information is from the TABLE in the SEC filing data/sec_filings/sec-edgar-filings/GOOGL/10-K/0001652044-26-000018/full-s"
+0.6,t5,3,1.0,15635.197333060205,True,,"Amazon's AWS net sales for fiscal year 2025 were $45,606 million. According to the same SEC filing, AWS sales increased 20% in 2025 compared to the prior year. Additionally, the company reported that "
+0.6,t6,3,0.6666666666666666,4518.766541965306,True,,"Meta's total advertising revenues were $196,175 million for fiscal year 2025. This information is available in the table from the 10-K filing, dated `0001628280-26-003942/full-submission.txt`."
+0.6,t7,3,0.3333333333333333,4392.3982498236,True,,"Apple's total net sales for the three months ended March 28, 2026, were $111,184 million. This information can be found under the ""Note 2 – Revenue"" section of the Form 10-Q filing."
+0.6,t8,3,0.6666666666666666,9011.10816700384,True,,"Microsoft's revenue in Q3 fiscal year 2026 was $82,886 million. This figure is derived from the ""Revenue, 2026"" entry in the financial table from the SEC filing `data/sec_filings/sec-edgar-filings/MSF"
+0.6,m1,4,1.0,15052.60833306238,True,,"Apple's iPhone net sales increased by $8,403 million, or 4%, from $201,183 million for fiscal year 2024 to $209,586 million for fiscal year 2025. This significant surge was largely attributed to the h"
+0.6,m2,4,1.0,22214.079207973555,True,,"For fiscal year 2025, Microsoft's Intelligent Cloud segment revenue increased by $18.8 billion or 21% compared to fiscal year 2024, as stated in the ""Highlights from fiscal year 2025 compared with fis"
+0.6,m3,4,0.3333333333333333,8931.813000002876,True,,"AWS sales increased by 20% in 2025, compared to the prior year, according to the SEC filing from data/sec_filings/sec-edgar-filings/AMZN/10-K/0001018724-26-000004/full-submission.txt. Regarding how ma"
+0.6,m4,4,1.0,41993.460749974474,True,,"Meta's family of apps daily active users increased by 150 million from Q1 2025 to Q4 2025. Daily active users were 3.43 billion for Q1 2025, as derived from the Q1 CY 2026 figure of 3.56 billion being"
+0.6,m5,4,1.0,12731.589749921113,True,,"Alphabet's search advertising revenue significantly outperformed YouTube ads revenue in 2025. For fiscal year 2025, Alphabet's Google Search & other revenue stood at $50,702 million, while YouTube ads"
+0.6,oc1,1,1.0,5361.229042056948,False,,"According to TradingEconomics, the federal funds rate was unchanged at the 3.5%–3.75% target range in April 2026. This is consistent with information from NerdWallet, which states that the current Fed"
+0.6,oc2,1,0.6666666666666666,4030.420459108427,False,,"Based on the provided context, there are multiple sources with varying market capitalization values for Tesla as of May 2026 and May 08, 2026. According to the information from companiesmarketcap.com,"
+0.6,oc3,1,0.0,5396.734249778092,False,,Insufficient information.
+0.6,oc4,1,0.6666666666666666,5097.803584067151,False,,"The S&P 500's previous closing price was 7,337.11 USD, according to information from CNBC.com ([Web: https://www.cnbc.com/quotes/.SPX])."
+1.0,n1,1,0.3333333333333333,4701.67375006713,True,,"The provided context refers to the discussion of risk factors in Part I, Item 1A of the 2025 Form 10-K under the heading ""Risk Factors."" However, the specific details or a list of these principal risk"
+1.0,n2,1,1.0,18800.183415878564,True,,"Microsoft describes its Azure business as a comprehensive set of cloud services that offer developers, IT professionals, and enterprises the freedom to build, deploy, and manage applications on any pl"
+1.0,n3,1,1.0,5496.080375043675,True,,"Alphabet addresses AI competition in its Annual Report on Form 10-K filed on February 4, 2026, under ""ITEM 1A. RISK FACTORS."" The company states that ""AI technology and services are highly competitive"
+1.0,n4,1,0.6666666666666666,8323.558333097026,True,,"Based on the provided context, the 2025 10-K does not explicitly outline a comprehensive ""AWS strategy"" in a dedicated section. However, it provides information about its operational model, performanc"
+1.0,n5,1,0.6666666666666666,19016.832999885082,True,,"Meta Platforms, Inc. says that it expects to continue making significant investments in virtual and augmented reality and other technologies to support its Reality Labs efforts, which is reliant on ge"
+1.0,t1,3,1.0,5223.78591587767,True,,"Apple's total net sales were $416,161 million for fiscal year 2025, according to the ""Performance"" section and ""Products and Services Performance"" section of Apple Inc.'s 2025 Form 10-K filing."
+1.0,t2,3,1.0,4314.391250023618,True,,"Apple's iPhone net sales were $209,586 million for fiscal year 2025, as stated in the ""Products and Services Performance"" table from the 2025 Form 10-K filing."
+1.0,t3,3,0.3333333333333333,27788.5435000062,True,,"Microsoft's revenue from Intelligent Cloud for fiscal year 2025 was $13,683 million. This information is found in a table within the SEC filing for the year ended June 30, 2025, document 0000950170-25"
+1.0,t4,3,0.6666666666666666,3506.9568750914186,True,,"Alphabet's Google Cloud revenue in 2025 was $58,705 million, according to the ""TABLE"" from the 10-K filing dated 2026-02-01.
+
+Another source, a ""TABLE"" from the 10-Q filing dated 2026-04-23, indicates"
+1.0,t5,3,0.6666666666666666,23882.58345797658,True,,"Amazon's AWS net sales for the three months ended March 31, 2025, were $29,267 million. This information is provided under ""Net Sales information"" from the Three Months Ended March 31, 2026 section of"
+1.0,t6,3,0.6666666666666666,2355.1295411307365,True,,"According to the provided context, Meta's total advertising revenues in 2025 were $196,175 million"
+1.0,t7,3,0.3333333333333333,3892.740792129189,True,,"Apple's total net sales for the three months ended March 28, 2026, were $111,184 million. This information is found in the ""Note 2 – Revenue"" section, under the table showing disaggregated net sales f"
+1.0,t8,3,0.6666666666666666,9508.198499912396,True,,"Microsoft's revenue for fiscal year 2026 was $82,886 million, as reported in the MSFT 10-Q filing (0001193125-26-191507). The context does not explicitly specify that this figure is for the third quar"
+1.0,m1,4,1.0,37483.674000017345,True,,"Apple's iPhone revenue increased by $8,403 million, or 4%, from $201,183 million for fiscal year 2024 to $209,586 million for fiscal year 2025. This increase was ""due to higher net sales of Pro models"
+1.0,m2,4,0.3333333333333333,51662.85766707733,True,,"Microsoft's Intelligent Cloud segment reported a figure of $14,022 million for the fiscal year ended June 30, 2025. Within the Intelligent Cloud segment, Server products and cloud services revenue inc"
+1.0,m3,4,1.0,9947.999665979296,True,,"Amazon's AWS growth rate in 2025 was 20%. The growth rate is attributed to increased customer usage, which was partially offset by pricing changes primarily driven by long-term customer contracts. Man"
+1.0,m4,4,1.0,12576.6838749405,True,,"For the year ended December 31, 2025, Meta's Family daily active people (DAP) was 3.58 billion on average, representing an increase of 7% year-over-year. This information is available in the ""[META/10"
+1.0,m5,4,1.0,29746.742999879643,True,,"Alphabet's Search advertising revenue for fiscal year 2025 was $224,532 million, while YouTube ads revenues were $40,367 million. This indicates that Google's Search & other revenues accounted for a s"
+1.0,oc1,1,1.0,1880.3642080165446,False,,"According to the Effective Federal Funds Rate chart at ycharts.com, the current effective Federal Funds Rate is at $3.64 billion for April 2026. It should be noted that while the current rate is menti"
+1.0,oc2,1,0.6666666666666666,4174.968875013292,False,,"According to the provided context, Tesla's market cap today, or as of May 2026 / May 08, 2026, is reported as:
+
+*   $1.608 Trillion USD as of May 2026, according to Web: https://companiesmarketcap.com"
+1.0,oc3,1,1.0,3920.308958971873,False,,According to the information provided from the official United States Department of the Treasury website (https://home.treasury.gov/about/general-information/officials and https://home.treasury.gov/ab
+1.0,oc4,1,0.6666666666666666,5907.334249932319,False,,"The S&P 500's closing price yesterday was 7,337.11, as indicated by the ""Prior Close"" on 05/07/26 according to the Wall Street Journal, and also listed as ""Prev Close"" by CNBC."

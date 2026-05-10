@@ -1,0 +1,332 @@
+[
+  {
+    "id": "n1",
+    "type": 1,
+    "question": "What are the principal risk factors disclosed in Apple's fiscal year 2025 10-K?",
+    "expected_keywords": ["macroeconomic", "risk", "supply", "competition", "regulatory"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "n2",
+    "type": 1,
+    "question": "How does Microsoft describe its Azure business in the fiscal year 2025 10-K?",
+    "expected_keywords": ["azure", "cloud", "intelligent", "services", "platform"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "n3",
+    "type": 1,
+    "question": "What does Alphabet say about AI competition in its 2025 10-K?",
+    "expected_keywords": ["ai", "competition", "competitive", "artificial intelligence", "models"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "n4",
+    "type": 1,
+    "question": "How does Amazon describe its AWS strategy in the 2025 10-K?",
+    "expected_keywords": ["aws", "cloud", "customer", "services", "infrastructure"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "n5",
+    "type": 1,
+    "question": "What does Meta say about Reality Labs investments in its 2025 10-K?",
+    "expected_keywords": ["reality labs", "investment", "augmented reality", "operating", "loss"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t1",
+    "type": 3,
+    "question": "What were Apple's total net sales in fiscal year 2025?",
+    "expected_keywords": ["416", "million", "net sales", "fiscal", "total"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t2",
+    "type": 3,
+    "question": "What was Apple's iPhone revenue in fiscal year 2025?",
+    "expected_keywords": ["209", "million", "iphone", "net sales", "fiscal"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t3",
+    "type": 3,
+    "question": "What was Microsoft's revenue from Intelligent Cloud in fiscal year 2025?",
+    "expected_keywords": ["106", "intelligent cloud", "billion", "revenue", "segment"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t4",
+    "type": 3,
+    "question": "What was Alphabet's Google Cloud revenue in 2025?",
+    "expected_keywords": ["cloud", "billion", "revenue", "google", "segment"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t5",
+    "type": 3,
+    "question": "What was Amazon's AWS net sales in 2025?",
+    "expected_keywords": ["aws", "billion", "net sales", "segment", "amazon"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t6",
+    "type": 3,
+    "question": "What were Meta's total advertising revenues in 2025?",
+    "expected_keywords": ["advertising", "billion", "revenue", "family", "apps"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t7",
+    "type": 3,
+    "question": "What were Apple's net sales in the quarter ended March 28, 2026?",
+    "expected_keywords": ["quarter", "billion", "net sales", "march", "2026"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "t8",
+    "type": 3,
+    "question": "What was Microsoft's revenue in Q3 fiscal year 2026?",
+    "expected_keywords": ["billion", "revenue", "quarter", "fiscal", "march"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m1",
+    "type": 4,
+    "question": "How did Apple's iPhone revenue change between fiscal year 2024 and 2025, and what does management cite as the reason?",
+    "expected_keywords": ["iphone", "increase", "pro", "fiscal", "growth"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m2",
+    "type": 4,
+    "question": "How did Microsoft's Intelligent Cloud segment perform in FY2025, and what drove the change?",
+    "expected_keywords": ["intelligent cloud", "azure", "growth", "revenue", "demand"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m3",
+    "type": 4,
+    "question": "What was Amazon's AWS growth rate in 2025, and how does management explain it?",
+    "expected_keywords": ["aws", "growth", "customer", "cloud", "demand"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m4",
+    "type": 4,
+    "question": "How did Meta's family of apps daily active users change in 2025, and what does management say about Reality Labs spending?",
+    "expected_keywords": ["daily active", "reality labs", "billion", "users", "operating"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "m5",
+    "type": 4,
+    "question": "How did Alphabet's Search advertising revenue compare to YouTube ads in 2025, and what trends does management highlight?",
+    "expected_keywords": ["search", "youtube", "advertising", "revenue", "google"],
+    "ground_truth_in_corpus": true
+  },
+  {
+    "id": "oc1",
+    "type": 1,
+    "question": "What is the current federal funds rate?",
+    "expected_keywords": ["%", "rate", "federal", "funds", "reserve"],
+    "ground_truth_in_corpus": false
+  },
+  {
+    "id": "oc2",
+    "type": 1,
+    "question": "What is Tesla's market cap today?",
+    "expected_keywords": ["tesla", "billion", "market", "cap", "trillion"],
+    "ground_truth_in_corpus": false
+  },
+  {
+    "id": "oc3",
+    "type": 1,
+    "question": "Who is the current US Treasury Secretary?",
+    "expected_keywords": ["secretary", "treasury", "bessent", "current", "states"],
+    "ground_truth_in_corpus": false
+  },
+  {
+    "id": "oc4",
+    "type": 1,
+    "question": "What was the S&P 500's closing price yesterday?",
+    "expected_keywords": ["s&p", "500", "points", "close", "index"],
+    "ground_truth_in_corpus": false
+  },
+  {
+    "id": "ec1",
+    "type": 1,
+    "question": "Does Apple's 2025 10-K disclose any litigation related to App Store practices?",
+    "expected_keywords": ["app store", "litigation", "legal", "antitrust", "regulatory"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "negation_or_specific_disclosure"
+  },
+  {
+    "id": "ec2",
+    "type": 3,
+    "question": "What was Apple's gross margin percentage on Services in fiscal year 2025?",
+    "expected_keywords": ["services", "gross margin", "%", "fiscal", "products"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "specific_table_cell_lookup"
+  },
+  {
+    "id": "ec3",
+    "type": 4,
+    "question": "By approximately how much did Apple's iPhone net sales grow from fiscal year 2024 to fiscal year 2025, and what does management attribute the change to?",
+    "expected_keywords": ["iphone", "fiscal year", "increase", "pro", "growth"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "year_over_year_arithmetic"
+  },
+  {
+    "id": "ec4",
+    "type": 1,
+    "question": "Summarize the key risks Apple identifies in its 10-K relating to operations in China and the broader Asia-Pacific region.",
+    "expected_keywords": ["china", "asia", "supply", "operations", "manufacturing"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "long_form_section_summary"
+  },
+  {
+    "id": "ec5",
+    "type": 4,
+    "question": "How does Microsoft's cloud strategy as described in its 10-K compare to Amazon's AWS strategy in its 10-K?",
+    "expected_keywords": ["microsoft", "amazon", "cloud", "aws", "azure"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "cross_document_comparison"
+  },
+  {
+    "id": "ec6",
+    "type": 1,
+    "question": "Does Apple's 10-K report any holdings of cryptocurrency or digital assets?",
+    "expected_keywords": ["digital", "asset", "cryptocurrency", "holdings", "investment"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "negation_likely_no"
+  },
+  {
+    "id": "ec7",
+    "type": 3,
+    "question": "What was Apple's cash and cash equivalents at the end of fiscal year 2025?",
+    "expected_keywords": ["cash", "equivalents", "fiscal", "balance sheet", "billion"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "balance_sheet_lookup"
+  },
+  {
+    "id": "ec8",
+    "type": 4,
+    "question": "What was Apple's cash position at fiscal year-end 2025 and what does management say about capital return plans?",
+    "expected_keywords": ["cash", "capital return", "dividend", "share repurchase", "fiscal"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "balance_sheet_plus_narrative"
+  },
+  {
+    "id": "ec9",
+    "type": 1,
+    "question": "What does Apple's Item 1A Risk Factors section say about climate change and environmental regulation?",
+    "expected_keywords": ["climate", "environmental", "regulation", "risk", "operations"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "section_name_lookup"
+  },
+  {
+    "id": "ec10",
+    "type": 4,
+    "question": "What were Microsoft's most recently reported quarterly revenue and operating income, and what segments drove the result?",
+    "expected_keywords": ["quarter", "revenue", "operating income", "segment", "fiscal"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "ambiguous_time_reference_latest_filing"
+  },
+  {
+    "id": "ec11",
+    "type": 3,
+    "question": "What was Apple's effective tax rate in fiscal year 2025?",
+    "expected_keywords": ["effective tax", "rate", "%", "fiscal", "provision"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "specific_percentage_table_cell"
+  },
+  {
+    "id": "ec12",
+    "type": 1,
+    "question": "What does Apple disclose about share-based compensation expense in its 2025 10-K?",
+    "expected_keywords": ["share-based", "compensation", "expense", "stock", "employees"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "specialized_disclosure_section"
+  },
+  {
+    "id": "ec13",
+    "type": 4,
+    "question": "By approximately how much did Microsoft's Intelligent Cloud segment revenue grow from fiscal year 2024 to fiscal year 2025?",
+    "expected_keywords": ["intelligent cloud", "fiscal", "increase", "billion", "azure"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "year_over_year_arithmetic"
+  },
+  {
+    "id": "ec14",
+    "type": 1,
+    "question": "Does Meta's 2025 10-K describe specific legal proceedings or litigation related to user privacy?",
+    "expected_keywords": ["privacy", "litigation", "legal", "users", "regulation"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "negation_or_specific_disclosure"
+  },
+  {
+    "id": "ec15",
+    "type": 4,
+    "question": "How does Alphabet's advertising revenue strategy as described in its 10-K compare to Meta's advertising business strategy?",
+    "expected_keywords": ["alphabet", "meta", "advertising", "google", "family"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "cross_document_comparison"
+  },
+  {
+    "id": "ec16",
+    "type": 3,
+    "question": "What was Microsoft's Productivity and Business Processes segment revenue in fiscal year 2025?",
+    "expected_keywords": ["productivity", "business processes", "fiscal", "billion", "segment"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "specific_table_cell_lookup"
+  },
+  {
+    "id": "ec17",
+    "type": 3,
+    "question": "What were Microsoft's total assets at the end of fiscal year 2025?",
+    "expected_keywords": ["total assets", "fiscal", "balance sheet", "billion", "june"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "balance_sheet_lookup"
+  },
+  {
+    "id": "ec18",
+    "type": 1,
+    "question": "Does Amazon's 2025 10-K disclose any direct exposure to mortgage-backed securities or residential real estate lending?",
+    "expected_keywords": ["mortgage", "securities", "investment", "marketable", "fair value"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "negation_likely_no"
+  },
+  {
+    "id": "ec19",
+    "type": 1,
+    "question": "What does Microsoft's Management's Discussion and Analysis section say about the impact of AI investments on its product portfolio?",
+    "expected_keywords": ["md&a", "ai", "products", "investments", "discussion"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "section_name_lookup"
+  },
+  {
+    "id": "ec20",
+    "type": 3,
+    "question": "What was Alphabet's effective tax rate in fiscal year 2025?",
+    "expected_keywords": ["effective tax", "rate", "%", "provision", "fiscal"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "specific_percentage_table_cell"
+  },
+  {
+    "id": "ec21",
+    "type": 1,
+    "question": "Summarize Amazon's key strategic priorities as outlined in the 2025 10-K.",
+    "expected_keywords": ["customer", "operations", "long-term", "investment", "growth"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "long_form_section_summary"
+  },
+  {
+    "id": "ec22",
+    "type": 1,
+    "question": "What does Alphabet's 2025 10-K disclose about the financial performance of its Other Bets segment?",
+    "expected_keywords": ["other bets", "segment", "operating", "loss", "revenue"],
+    "ground_truth_in_corpus": true,
+    "edge_case": "specialized_disclosure_section"
+  }
+]

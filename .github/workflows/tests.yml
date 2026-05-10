@@ -1,0 +1,109 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:  # allows manual triggering from the Actions tab
+
+# Cancel in-flight runs of this workflow if a new commit is pushed to the
+# same branch — saves CI minutes when iterating quickly.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # =====================================================================
+  # Job 1: pytest across multiple Python versions
+  # =====================================================================
+  pytest:
+    name: pytest (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      # Lightweight install — only the deps needed for the schema and
+      # parser tests. The full pipeline deps (sentence_transformers,
+      # faiss, torch) are heavy (~2 GB) and not needed for unit tests;
+      # tests that depend on them skip cleanly via pytest.importorskip.
+      - name: Install minimal test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest pytest-cov numpy pandas
+
+      - name: Run pytest with coverage
+        run: |
+          pytest tests/ \
+            --cov=. \
+            --cov-report=term-missing \
+            --cov-report=xml \
+            -v --tb=short
+
+      - name: Upload coverage report (Python 3.11 only)
+        if: matrix.python-version == '3.11'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 14
+
+  # =====================================================================
+  # Job 2: Lint (separate from tests so failures are surfaced clearly)
+  # =====================================================================
+  lint:
+    name: lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install ruff
+        run: pip install ruff
+
+      # Lint the helper modules we test — covers the actual surface
+      # area of the unit tests. Skip the heavy pipeline modules
+      # (crag_pipeline, rag_baseline) since linting them would require
+      # the full ML deps to resolve imports.
+      - name: Run ruff check
+        run: |
+          ruff check tests/ \
+            --select E,W,F \
+            --ignore E501 \
+            --output-format=github
+        continue-on-error: true  # report findings but don't fail the build
+
+  # =====================================================================
+  # Job 3: Validate eval_questions.json schema
+  # =====================================================================
+  validate-data:
+    name: validate eval bank schema
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install minimal deps
+        run: pip install pytest
+
+      - name: Run schema-only test subset
+        run: pytest tests/test_eval_questions_schema.py -v
