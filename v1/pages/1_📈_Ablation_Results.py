@@ -24,30 +24,83 @@ st.set_page_config(
 )
 
 inject_css()
-hero_header(subtitle="Ablation results · 22 questions × 4 conditions · Llama-3.1-8B generator")
+hero_header(subtitle="Ablation results · v1 / v2 / v3 · Llama-3.1-8B & Gemini-2.5-Flash generators")
+
+# ---------------------------------------------------------------------------
+# Version selector
+# ---------------------------------------------------------------------------
+# Each version of the system has its own ablation results CSV. v1 is the
+# version presented in the live class demo (22 questions). v2 and v3 are
+# the iteration ablation runs on the expanded 44-question eval bank.
+# Default to v1 so this page loads to exactly what was shown in the demo
+# recording when no specific version is selected.
+
+VERSION_RESULTS: dict[str, dict] = {
+    "v1 — presented in demo (22q)": {
+        "csv": "data/eval_results_v1_22q.csv",
+        "n_questions": 22,
+        "show_v1_findings": True,
+        "blurb": "Original Probabilistic CRAG results as presented in our class demo and recorded video. 22 questions × 4 conditions.",
+    },
+    "v1 — 44q rerun": {
+        "csv": "data/eval_results_v1_44q_judged.csv",
+        "n_questions": 44,
+        "show_v1_findings": False,
+        "blurb": "v1 system code re-evaluated on the expanded 44-question eval bank for direct apples-to-apples comparison with v2 and v3. Same crag_pipeline.py as v1 demo; harmonized evaluation harness. Falls back to data/eval_results.csv if the labeled version isn't saved yet.",
+    },
+    "v2 — 44q with web noise": {
+        "csv": "data/eval_results_v2_websnoise.csv",
+        "n_questions": 44,
+        "show_v1_findings": False,
+        "blurb": "Iteration with modality-aware decomposition + per-sub-question coverage check + numerical fidelity check + bootstrap CIs. Web fallback still fires on decomposed sub-questions (the un-fixed behavior).",
+    },
+    "v3 — 44q web denoised (recommended)": {
+        "csv": "data/eval_results_v3_judged.csv",
+        "n_questions": 44,
+        "show_v1_findings": False,
+        "blurb": "v2 + the `_suppress_web=True` fix that prevents off-topic web content from polluting decomposed-query answers. Recommended version. See ../README.md for the v2→v3 delta breakdown.",
+    },
+}
+
+selected_version = st.selectbox(
+    "Select a version to view its ablation results",
+    list(VERSION_RESULTS.keys()),
+    index=0,
+    help="Default = v1 (the version presented in the live demo). v2 and v3 are the iteration ablation runs on the expanded 44-question eval bank.",
+)
+version_meta = VERSION_RESULTS[selected_version]
+results_path = Path(version_meta["csv"])
+n_questions = version_meta["n_questions"]
+show_v1_findings = version_meta["show_v1_findings"]
 
 # ---------------------------------------------------------------------------
 # Page header
 # ---------------------------------------------------------------------------
 
 st.markdown(
-    "<div style='display:flex; align-items:baseline; justify-content:space-between; "
-    "margin-bottom:0.6rem; border-bottom:2px solid #1E2761; padding-bottom:0.5rem;'>"
-    "<h2 style='margin:0; font-size:1.4rem;'>Ablation Study Results</h2>"
-    "<span style='color:#94A3B8; font-size:0.85rem;'>22 questions · 4 conditions</span>"
-    "</div>",
+    f"<div style='display:flex; align-items:baseline; justify-content:space-between; "
+    f"margin-bottom:0.6rem; border-bottom:2px solid #1E2761; padding-bottom:0.5rem;'>"
+    f"<h2 style='margin:0; font-size:1.4rem;'>Ablation Study Results — {selected_version}</h2>"
+    f"<span style='color:#94A3B8; font-size:0.85rem;'>{n_questions} questions · 4 conditions</span>"
+    f"</div>",
     unsafe_allow_html=True,
 )
 
-results_path = Path("data/eval_results.csv")
+st.markdown(
+    f"<div style='font-size:0.85rem; color:#475569; line-height:1.55; margin-bottom:1rem;'>"
+    f"{version_meta['blurb']}</div>",
+    unsafe_allow_html=True,
+)
 
 if not results_path.exists():
     st.markdown(
-        "<div style='background:#FEF3C7; border:1px solid #F4A261; "
-        "padding:1rem 1.25rem; border-radius:0.5rem; color:#78350F; margin-top:1rem;'>"
-        "Ablation results not found. Run <code>python evaluate.py</code> "
-        "to generate <code>data/eval_results.csv</code>, then reload."
-        "</div>",
+        f"<div style='background:#FEF3C7; border:1px solid #F4A261; "
+        f"padding:1rem 1.25rem; border-radius:0.5rem; color:#78350F; margin-top:1rem;'>"
+        f"Results for <b>{selected_version}</b> not found at <code>{results_path}</code>. "
+        f"For v1, run <code>python evaluate.py</code> from this folder; "
+        f"for v2/v3, those CSVs live in their respective folders' <code>data/</code> directory. "
+        f"Switch back to <i>v1 — presented in demo</i> in the dropdown above to see the recorded results."
+        f"</div>",
         unsafe_allow_html=True,
     )
     st.stop()
@@ -200,29 +253,48 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-findings = [
-    {"icon": "✓", "color": "#2A9D8F",
-     "text": "<b>CRAG-tables wins overall</b> by +17% relative (0.621 vs 0.530 best baseline)."},
-    {"icon": "✓", "color": "#2A9D8F",
-     "text": "<b>Type 1 (narrative + OOC):</b> CRAG-tables 0.556 vs best baseline 0.333 — <b>+67% relative.</b>"},
-    {"icon": "✓", "color": "#2A9D8F",
-     "text": "<b>Type 4 (multimodal synthesis):</b> CRAG-tables 0.733 vs best baseline 0.667 — <b>+10% relative.</b>"},
-    {"icon": "≈", "color": "#F4A261",
-     "text": "<b>Type 3 (table lookup):</b> tied — naive RAG is strong because numerical figures appear redundantly across MD&A and statements."},
-    {"icon": "✓", "color": "#2A9D8F",
-     "text": "<b>91% routing precision</b> on CRAG-tables — a quality signal only the corrective architecture can produce."},
-]
-
-for f in findings:
+# v1 findings are hardcoded with the specific numbers reported in the
+# class demo. They only apply to the "v1 — presented in demo" view
+# (22-question eval) and would be misleading numerically if shown for
+# v1-44q-rerun, v2, or v3. For those, the report's headline-results
+# section in ../README.md gives the up-to-date interpretation; we
+# show a brief pointer here instead.
+if show_v1_findings:
+    findings = [
+        {"icon": "✓", "color": "#2A9D8F",
+         "text": "<b>CRAG-tables wins overall</b> by +17% relative (0.621 vs 0.530 best baseline)."},
+        {"icon": "✓", "color": "#2A9D8F",
+         "text": "<b>Type 1 (narrative + OOC):</b> CRAG-tables 0.556 vs best baseline 0.333 — <b>+67% relative.</b>"},
+        {"icon": "✓", "color": "#2A9D8F",
+         "text": "<b>Type 4 (multimodal synthesis):</b> CRAG-tables 0.733 vs best baseline 0.667 — <b>+10% relative.</b>"},
+        {"icon": "≈", "color": "#F4A261",
+         "text": "<b>Type 3 (table lookup):</b> tied — naive RAG is strong because numerical figures appear redundantly across MD&A and statements."},
+        {"icon": "✓", "color": "#2A9D8F",
+         "text": "<b>91% routing precision</b> on CRAG-tables — a quality signal only the corrective architecture can produce."},
+    ]
+    for f in findings:
+        st.markdown(
+            f"<div style='display:flex; align-items:flex-start; background:white; "
+            f"border:1px solid #E2E8F0; border-left:4px solid {f['color']}; "
+            f"padding:0.85rem 1.1rem; border-radius:0.4rem; margin-bottom:0.5rem; "
+            f"box-shadow: 0 1px 2px rgba(0,0,0,0.03);'>"
+            f"<div style='font-size:1.2rem; color:{f['color']}; font-weight:700; "
+            f"margin-right:0.7rem; min-width:1.3rem;'>{f['icon']}</div>"
+            f"<div style='color:#1E293B; font-size:0.92rem; line-height:1.45;'>"
+            f"{f['text']}</div></div>",
+            unsafe_allow_html=True,
+        )
+else:
     st.markdown(
-        f"<div style='display:flex; align-items:flex-start; background:white; "
-        f"border:1px solid #E2E8F0; border-left:4px solid {f['color']}; "
-        f"padding:0.85rem 1.1rem; border-radius:0.4rem; margin-bottom:0.5rem; "
-        f"box-shadow: 0 1px 2px rgba(0,0,0,0.03);'>"
-        f"<div style='font-size:1.2rem; color:{f['color']}; font-weight:700; "
-        f"margin-right:0.7rem; min-width:1.3rem;'>{f['icon']}</div>"
-        f"<div style='color:#1E293B; font-size:0.92rem; line-height:1.45;'>"
-        f"{f['text']}</div></div>",
+        "<div style='background:#F1F5F9; border:1px solid #CBD5E1; "
+        "padding:0.85rem 1.1rem; border-radius:0.4rem; color:#475569; "
+        "font-size:0.88rem; line-height:1.5;'>"
+        "Findings for this version (v1-44q rerun, v2, or v3) are reported in the "
+        "project root <code>README.md</code> under <i>Headline results</i>, "
+        "with bootstrap 95% CIs, numerical fidelity, and sub-question coverage "
+        "metrics. The KPI tiles and charts above use the <i>same</i> CSV that "
+        "produced those numbers — they will agree."
+        "</div>",
         unsafe_allow_html=True,
     )
 

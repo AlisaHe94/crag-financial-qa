@@ -130,7 +130,12 @@ def load_eval_questions(path: Path = EVAL_QUESTIONS_PATH) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def keyword_hit_rate(answer: str, keywords: list[str]) -> float:
+    """Fraction of expected keywords that appear (substring, case-insensitive)
+    in the answer. Returns 0.0 if either side is empty/None — robust against
+    LLM call failures that produce a None answer."""
     if not keywords:
+        return 0.0
+    if not answer:  # handles "" and None gracefully
         return 0.0
     lower = answer.lower()
     return sum(1 for kw in keywords if kw.lower() in lower) / len(keywords)
@@ -164,10 +169,20 @@ def run_condition(system, questions: list[dict], name: str, sleep_between: float
         khr = keyword_hit_rate(answer, q.get("expected_keywords", []))
         rc = routing_correct(result, q)
 
+        # Pull the consistency-check metadata that CRAG attaches when it
+        # runs (numerical fidelity check + per-sub-question coverage).
+        # Baseline conditions don't produce these — default to neutral
+        # values (1.0 / empty list) so the columns are uniform across rows.
+        fidelity = result.get("numerical_fidelity") or {}
+        incomplete_subqs = result.get("incomplete_sub_questions") or []
+        coverage_rate = result.get("sub_question_coverage_rate")
+        edge_case = q.get("edge_case", "")
+
         rows.append({
             "condition": name,
             "question_id": q["id"],
             "question_type": q.get("type"),
+            "edge_case": edge_case,
             # Save full answer (capped at 2000 chars to keep CSV manageable)
             # rather than the previous 120-char snippet. The 120-char cut was
             # chopping off the actual numerical answer in CRAG's verbose
@@ -180,6 +195,14 @@ def run_condition(system, questions: list[dict], name: str, sleep_between: float
             "tier_used": result.get("tier_used"),
             "query_type": result.get("query_type"),
             "latency_ms": round(latency_ms, 1),
+            # --- Consistency-check telemetry ---
+            "fidelity_score": fidelity.get("fidelity_score"),
+            "n_numbers_in_answer": len(fidelity.get("numbers_in_answer", [])),
+            "n_unverified_numbers": len(fidelity.get("unverified_numbers", [])),
+            "unverified_numbers": "; ".join(fidelity.get("unverified_numbers", [])),
+            "sub_question_coverage_rate": coverage_rate,
+            "n_incomplete_sub_questions": len(incomplete_subqs),
+            "incomplete_sub_questions": "; ".join(incomplete_subqs),
         })
         logger.info(f"[{name}] {q['id']} (type {q.get('type')}) khr={khr:.2f} {latency_ms:.0f}ms")
         # Pace requests so we don't slam Groq's 6k TPM / 30 RPM free-tier limits.
@@ -235,7 +258,48 @@ def run_ablation(
         ("crag_tables",        vs_tables,   True,  vs_baseline),  # ← HYBRID
     ]
 
+    # ----- Resume support -----
+    # If results_path already exists with rows for some conditions, preserve
+    # those rows and skip those conditions on this run. Useful when a long
+    # ablation gets interrupted (Ctrl-C, network blip, etc.) — re-running
+    # without --no-resume picks up where the previous run stopped instead of
+    # redoing everything. To force a clean rerun from scratch, delete the
+    # CSV first.
+    completed_conditions: set[str] = set()
+    if results_path.exists():
+        try:
+            existing = pd.read_csv(results_path)
+            # A condition is "complete" only if it has rows for all questions
+            # (handles the mid-condition crash case where partial rows
+            # might get written to the CSV).
+            n_questions = len(questions)
+            for cond_name in [c[0] for c in conditions]:
+                cond_rows = existing[existing["condition"] == cond_name]
+                if len(cond_rows) == n_questions:
+                    completed_conditions.add(cond_name)
+            if completed_conditions:
+                logger.info(
+                    f"Resume mode: found {len(completed_conditions)} completed "
+                    f"conditions in {results_path}: {sorted(completed_conditions)}. "
+                    f"Will preserve those rows and skip those conditions."
+                )
+                # Preserve the completed rows so the final CSV has them.
+                preserved = existing[
+                    existing["condition"].isin(completed_conditions)
+                ]
+                all_rows.extend(preserved.to_dict("records"))
+        except Exception as e:
+            logger.warning(
+                f"Could not parse existing {results_path} for resume "
+                f"(starting clean): {e}"
+            )
+
     for cond_name, vs, use_crag, hybrid_text_vs in conditions:
+        if cond_name in completed_conditions:
+            logger.info(
+                f"\n{'='*60}\nSkipping completed condition: {cond_name}\n{'='*60}"
+            )
+            continue
         logger.info(f"\n{'='*60}\nCondition: {cond_name}\n{'='*60}")
         try:
             if use_crag:
@@ -260,26 +324,127 @@ def run_ablation(
     return df
 
 
+def _bootstrap_ci(values, n_resamples: int = 1000, ci: float = 0.95):
+    """Compute the (lower, upper) bootstrap percentile CI of the mean.
+
+    Returns (mean, lower, upper). With our N=22 eval set the bounds are
+    wide — that is the honest picture.
+    """
+    import numpy as np
+    arr = np.asarray([v for v in values if v is not None and not np.isnan(v)])
+    if len(arr) == 0:
+        return (float("nan"), float("nan"), float("nan"))
+    if len(arr) == 1:
+        return (float(arr[0]), float(arr[0]), float(arr[0]))
+    rng = np.random.default_rng(seed=42)  # fixed seed for reproducibility
+    boot_means = [rng.choice(arr, size=len(arr), replace=True).mean()
+                  for _ in range(n_resamples)]
+    alpha = (1 - ci) / 2
+    lo, hi = np.quantile(boot_means, [alpha, 1 - alpha])
+    return (float(arr.mean()), float(lo), float(hi))
+
+
 def _print_summary(df: pd.DataFrame) -> None:
-    print("\n=== Ablation Study — Overall ===")
-    overall = (
-        df.groupby("condition")
-        .agg(
-            avg_khr=("keyword_hit_rate", "mean"),
-            routing_precision=("routing_correct", lambda x: x.dropna().mean() if x.notna().any() else None),
-            avg_latency_ms=("latency_ms", "mean"),
-        )
-        .round(3)
-    )
+    print("\n=== Ablation Study — Overall (with 95% bootstrap CIs) ===")
+    rows = []
+    for condition, group in df.groupby("condition"):
+        khr_mean, khr_lo, khr_hi = _bootstrap_ci(group["keyword_hit_rate"])
+        routing_vals = group["routing_correct"].dropna()
+        rp_mean = routing_vals.mean() if len(routing_vals) else None
+        rp_lo, rp_hi = (None, None)
+        if rp_mean is not None:
+            _, rp_lo, rp_hi = _bootstrap_ci(routing_vals)
+        # Bootstrap CI on latency too — small per-cell N means latency
+        # variance is meaningful. Reported in milliseconds.
+        lat_mean, lat_lo, lat_hi = _bootstrap_ci(group["latency_ms"])
+        rows.append({
+            "condition": condition,
+            "avg_khr": round(khr_mean, 3),
+            "khr_95_ci": f"[{khr_lo:.3f}, {khr_hi:.3f}]",
+            "routing_precision": (None if rp_mean is None else round(rp_mean, 3)),
+            "rp_95_ci": (None if rp_lo is None
+                         else f"[{rp_lo:.3f}, {rp_hi:.3f}]"),
+            "avg_latency_ms": round(lat_mean, 0),
+            "lat_95_ci_ms": f"[{lat_lo:.0f}, {lat_hi:.0f}]",
+            "n": len(group),
+        })
+    overall = pd.DataFrame(rows).set_index("condition")
     print(overall.to_string())
 
-    print("\n=== Ablation Study — By Question Type ===")
-    by_type = (
-        df.groupby(["condition", "question_type"])
-        .agg(avg_khr=("keyword_hit_rate", "mean"), n=("question_id", "count"))
-        .round(3)
-    )
+    print("\n=== Ablation Study — By Question Type (with 95% bootstrap CIs) ===")
+    by_type_rows = []
+    for (condition, qtype), group in df.groupby(["condition", "question_type"]):
+        khr_mean, khr_lo, khr_hi = _bootstrap_ci(group["keyword_hit_rate"])
+        lat_mean, lat_lo, lat_hi = _bootstrap_ci(group["latency_ms"])
+        by_type_rows.append({
+            "condition": condition,
+            "question_type": qtype,
+            "n": len(group),
+            "avg_khr": round(khr_mean, 3),
+            "khr_95_ci": f"[{khr_lo:.3f}, {khr_hi:.3f}]",
+            "avg_latency_ms": round(lat_mean, 0),
+            "lat_95_ci_ms": f"[{lat_lo:.0f}, {lat_hi:.0f}]",
+        })
+    by_type = pd.DataFrame(by_type_rows).set_index(["condition", "question_type"])
     print(by_type.to_string())
+
+    # ---------- Consistency-check summary (CRAG conditions only) ----------
+    # Numerical fidelity + sub-question coverage are CRAG-only metrics
+    # (the baselines don't produce them). Filter to crag_* conditions and
+    # report mean fidelity + count of unverified-number rows.
+    crag_df = df[df["condition"].astype(str).str.startswith("crag")]
+    if len(crag_df):
+        print("\n=== Consistency Checks (CRAG conditions only) ===")
+        cc_rows = []
+        for condition, group in crag_df.groupby("condition"):
+            fidelity_vals = group["fidelity_score"].dropna()
+            mean_fidelity = fidelity_vals.mean() if len(fidelity_vals) else None
+            n_with_numbers = int((group["n_numbers_in_answer"].fillna(0) > 0).sum())
+            n_with_unverified = int((group["n_unverified_numbers"].fillna(0) > 0).sum())
+            coverage_vals = group["sub_question_coverage_rate"].dropna()
+            n_decomposed = len(coverage_vals)
+            mean_coverage = coverage_vals.mean() if n_decomposed else None
+            n_with_incomplete = int(
+                (group["n_incomplete_sub_questions"].fillna(0) > 0).sum()
+            )
+            cc_rows.append({
+                "condition": condition,
+                "mean_fidelity": (None if mean_fidelity is None
+                                   else round(mean_fidelity, 3)),
+                "n_qs_with_numbers": n_with_numbers,
+                "n_qs_with_unverified_nums": n_with_unverified,
+                "n_qs_decomposed": n_decomposed,
+                "mean_subq_coverage": (None if mean_coverage is None
+                                        else round(mean_coverage, 3)),
+                "n_qs_with_incomplete_subqs": n_with_incomplete,
+            })
+        cc = pd.DataFrame(cc_rows).set_index("condition")
+        print(cc.to_string())
+
+    # ---------- Edge-case breakdown (CRAG conditions only) ----------
+    # Pivot KHR by edge_case category for the failure-mode taxonomy in
+    # the report. Rows without an edge_case tag are excluded.
+    ec_df = crag_df[crag_df["edge_case"].astype(str).ne("")] if len(crag_df) else crag_df
+    if len(ec_df):
+        print("\n=== Edge-case KHR by category (CRAG conditions only) ===")
+        ec_rows = []
+        for (condition, ec), group in ec_df.groupby(["condition", "edge_case"]):
+            khr_mean, khr_lo, khr_hi = _bootstrap_ci(group["keyword_hit_rate"])
+            ec_rows.append({
+                "condition": condition,
+                "edge_case": ec,
+                "n": len(group),
+                "avg_khr": round(khr_mean, 3),
+                "khr_95_ci": f"[{khr_lo:.3f}, {khr_hi:.3f}]",
+            })
+        ec_summary = pd.DataFrame(ec_rows).set_index(["condition", "edge_case"])
+        print(ec_summary.to_string())
+
+    print("\nNote: 95% confidence intervals computed via 1000-sample percentile "
+          "bootstrap (seed=42). With per-cell N as low as 4-8 questions, intervals "
+          "are wide; this is the honest picture of small-eval variance.")
+    print("Latency includes all LLM calls (classifier + generator + completeness "
+          "check + optional re-prompt) plus retrieval and reranker time.")
 
 
 if __name__ == "__main__":

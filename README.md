@@ -1,23 +1,106 @@
 # Beyond Naive RAG: Probabilistic Corrective RAG for Financial Document QA
 
+[![tests](https://github.com/AlisaHe94/crag-financial-qa/actions/workflows/tests.yml/badge.svg)](https://github.com/AlisaHe94/crag-financial-qa/actions/workflows/tests.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
+
 **STAT 5293 Final Project** — Dishen Yang, Siwen Chen, Jiayi He
 
 A Corrective RAG (CRAG) pipeline for question answering over SEC financial filings. Features a probabilistic retrieval evaluator, modality-aware FAISS indexes (text + table), and a three-tier fallback: internal text → table → live web search.
+
+This repository contains **three labeled versions** of the system, organized as sibling folders so the architectural progression is visible at a glance:
+
+| Folder | Version | What's in it |
+|---|---|---|
+| [`v1/`](./v1/) | **v1** | Original Probabilistic CRAG (3-tier text/table/web fallback). No decomposition, no consistency checks. The starting point of the iteration. |
+| [`v2/`](./v2/) | **v2** | v1 + modality-aware decomposition + per-sub-question coverage check + numerical fidelity check + α-ensemble + bootstrap CIs + 44-question eval + corrected LLM-as-judge rubric. **Web noise included** (sub-questions can trigger their own web fallback). |
+| [`v3/`](./v3/) | **v3** | v2 + the `_suppress_web=True` fix for decomposed sub-questions. Decomposed sub-questions are now corpus-bound; top-level OOC queries still use web normally. **Recommended version.** |
+
+Each version is self-contained and independently runnable. v2 and v3 share most of their code — the architectural difference is one keyword argument (`_suppress_web=True`) in `_query_with_decomposition`. Diff [`v2/crag_pipeline.py`](./v2/crag_pipeline.py) against [`v3/crag_pipeline.py`](./v3/crag_pipeline.py) to see exactly what the v2→v3 fix changes.
+
+## Headline results
+
+### v2 / v3 ablation (44-question expanded eval bank)
+
+| Condition | KHR | KHR 95% CI | Routing precision | Latency (s) |
+|---|---|---|---|---|
+| `baseline_no_tables` | 0.668 | [0.609, 0.727] | — | 5.7 |
+| `baseline_tables` | 0.641 | [0.554, 0.723] | — | 4.9 |
+| `crag_no_tables` (v3) | **0.764** | **[0.709, 0.814]** | **0.886** | 15.3 |
+| `crag_tables` (v3) | 0.723 | [0.654, 0.791] | 0.864 | 17.8 |
+
+**Key takeaways:**
+
+- **CRAG (v3) outperforms baseline by ~0.07 KHR points** with non-overlapping bootstrap CIs. Headline ablation result.
+- **Routing precision of 0.886** demonstrates the probabilistic evaluator is well-calibrated (CRAG-only metric; baseline does not have routing).
+- **Numerical fidelity 0.73** (crag_no_tables, v3) — DANA-inspired post-hoc check showing ~27% of dollar/percentage values in CRAG answers are not directly grounded in retrieved chunks. A failure mode KHR cannot detect.
+- **Sub-question coverage 0.90** on both CRAG conditions — modality-aware decomposition + the per-sub-question coverage check are doing real work.
+
+**v2 → v3 deltas** (impact of the web-suppression fix alone):
+
+| Metric | v2 | v3 | Δ |
+|---|---|---|---|
+| Routing precision (crag_no_tables) | 0.841 | 0.886 | +0.04 |
+| Routing precision (crag_tables) | 0.795 | 0.864 | +0.07 |
+| Numerical fidelity (crag_no_tables) | 0.683 | 0.729 | +0.05 |
+| Sub-question coverage (crag_tables) | 0.818 | 0.900 | +0.08 |
+
+The v3 fix improved every secondary metric while keeping KHR essentially flat — confirming that web noise was contributing to lower routing precision and fidelity, not to the headline accuracy result.
+
+### Eval bank evolution (22 → 44 questions)
+
+The headline numbers above are the **canonical results** for this project, measured on the 44-question eval bank.
+
+The eval bank started at **22 questions**, and v1 was originally evaluated on that bank — those are the numbers shown in our class presentation and the live demo. Inspecting the 22-question results made it clear that 22 questions was not enough: failure modes we cared about (multimodal queries mixing narrative and tabular evidence, partial-out-of-corpus questions, dollar/percentage hallucination patterns) were underrepresented or missing entirely, and several question-type cells had too few examples to draw any conclusion at all. That observation is what motivated **expanding the eval bank to 44 questions** with explicit edge-case categories (n ≥ 2 per category) before the v2 → v3 iteration was run.
+
+The 22-question v1 run is preserved in [`v1/`](./v1/) as a historical first pass — it is the artifact that surfaced the eval-bank limitation in the first place, not a number we still defend. v1 was not re-run on the 44-question bank because the v2 → v3 iteration ablation is end-to-end on the same 44-question denominator and that is what the secondary metrics (routing precision, numerical fidelity, sub-question coverage) need a consistent denominator for. Going forward, treat **44q as the eval bank for this project**.
 
 ---
 
 ## Project Structure
 
 ```
-FinalProject/
-├── data_fetcher.py        # Download SEC filings from EDGAR
-├── document_processor.py  # PDF parsing: semantic chunking + table extraction
-├── rag_baseline.py        # FAISS vector store + baseline RAG
-├── crag_pipeline.py       # Probabilistic CRAG with tiered fallback
-├── evaluate.py            # Ablation study runner (4 conditions × 4 question types)
-├── app.py                 # Streamlit demo interface
-└── requirements.txt       # Python dependencies
+STAT 5293 Proj Proposal/
+├── README.md              # this file (project overview + headline results)
+├── AI_USAGE.md            # GenAI tool disclosure
+├── prompts/               # per-component prompt summaries (one file per code module)
+├── requirements.txt       # Python dependencies (shared across all three versions)
+├── .env.example           # template for API keys + threading-safety env vars
+├── .github/
+│   └── workflows/         # GitHub Actions CI: pytest matrix + ruff lint + schema validation
+├── tests/                 # pytest unit tests for shared helpers (bootstrap CI, KHR,
+│   │                      #   numerical fidelity, multi-score parser, eval-questions schema)
+│   └── README.md
+├── notebooks/
+│   └── results_analysis.ipynb   # v1/v2/v3 ablation analysis: KHR + bootstrap CIs,
+│                                #   v2→v3 deltas, edge-case drill-down, latency analysis
+├── data/                  # SEC filings + FAISS indexes + eval result CSVs (large files
+│   │                      #   gitignored; committed CSVs hold the headline ablation results)
+│   ├── eval_questions.json
+│   ├── eval_results_v1_22q.csv
+│   ├── eval_results_v1_44q.csv (+ _judged.csv)
+│   ├── eval_results_v2_websnoise.csv
+│   ├── eval_results_v3_judged.csv
+│   └── backups/
+├── v1/                    # original Probabilistic CRAG (baseline)
+│   ├── crag_pipeline.py
+│   ├── rag_baseline.py
+│   ├── evaluate.py
+│   ├── app.py + _styles.py + pages/   # Streamlit demo
+│   ├── document_processor.py
+│   ├── data_fetcher.py
+│   ├── judge_results.py + smoke_test.py
+│   └── README.md
+├── v2/                    # iteration with web-noise (preserved for ablation comparison)
+│   ├── (same Python files as v1, with crag_pipeline.py extended)
+│   ├── scripts/           # alpha_sweep, alpha_ensemble, citation_correctness, compare_answers
+│   └── README.md
+└── v3/                    # iteration with web-noise removed (recommended)
+    ├── (same Python files as v2 with one-line _suppress_web=True fix)
+    ├── scripts/
+    └── README.md
 ```
+
+Each version folder is self-contained and runnable from its own directory. Shared infrastructure (corpus + dependencies + tests + CI + analysis notebook + AI documentation) lives at the repository root and is referenced by all three.
 
 ---
 
@@ -64,11 +147,14 @@ baseline established by MultiFinRAG (arXiv:2506.20821).
 
 ## Step-by-Step Usage
 
+> All commands below assume you've `cd`'d into one of the version folders (`v1/`, `v2/`, or `v3/`). Each version is independently runnable; the example commands work identically across all three. Pick `v3/` for the recommended (web-noise-removed) version, `v2/` for the iteration-with-web-noise comparison, or `v1/` for the original baseline.
+
 ### Step 1 — Download SEC filings
 
-Downloads 10-K and 10-Q filings for AAPL, MSFT, GOOGL, AMZN, META from SEC EDGAR into `data/sec_filings/`.
+Downloads 10-K and 10-Q filings for AAPL, MSFT, GOOGL, AMZN, META from SEC EDGAR into the shared `../data/sec_filings/` folder at the repo root.
 
 ```bash
+cd v3/        # or v1/ or v2/
 python data_fetcher.py
 ```
 
@@ -202,6 +288,8 @@ Thresholds are set in `.env` and can be adjusted without code changes:
 
 ## Architecture Overview
 
+### v1 — Probabilistic CRAG baseline (3-tier fallback)
+
 ```
 Query
   │
@@ -214,7 +302,7 @@ Query
   │  combine text + table chunks
   ▼
 Probabilistic Evaluator
-  score = α·cosine + (1−α)·sigmoid(cross_encoder_logit)
+  score = α·cosine + (1−α)·sigmoid(cross_encoder_logit)   (α = 0.4)
   │
   ├─ score ≥ τ_high  →  CORRECT   → Generate answer
   ├─ τ_low ≤ score   →  AMBIGUOUS → Rewrite query → Re-retrieve → Generate
@@ -226,6 +314,44 @@ Probabilistic Evaluator
 
 <img width="935" height="467" alt="image" src="https://github.com/user-attachments/assets/8e41f87f-efa6-4d91-8eb9-8522786093da" />
 
+
+### v2 / v3 — Consistency interventions on top of v1
+
+v2 and v3 wrap the v1 three-tier flow with a decomposition layer (for multimodal queries) and two post-hoc consistency checks. The architectural difference between v2 and v3 is **one keyword argument**: `_suppress_web=True` on the inner CRAG calls inside the decomposition loop, which prevents sub-questions from triggering their own web fallback.
+
+```
+Query
+  │
+  ▼
+[Modality classifier] — text-only / table-only / multimodal
+  │
+  ├─ multimodal? ──Yes──► [Modality-aware decomposition]
+  │                          • split into text-side and table-side sub-questions
+  │                          • run each sub-q through the v1 three-tier flow
+  │                              ├── v2: sub-q can hit Tier 3 (Tavily web)   ← web noise
+  │                              └── v3: _suppress_web=True (corpus-bound)   ← the v2→v3 fix
+  │                          • fuse sub-answers into a single response
+  │
+  └─ single-modality? ──► v1 three-tier flow directly
+  ▼
+Draft answer
+  │
+  ▼
+[Per-sub-question coverage check]    (FinVet-style claim verification)
+  │  ├─ does the answer address every sub-question?
+  │  └─ flag any sub-q whose claims aren't grounded in retrieved chunks
+  ▼
+[Numerical fidelity check]           (DANA-inspired post-hoc verification)
+  │  ├─ extract every $ / % / ratio in the draft answer
+  │  ├─ normalize ($ + commas + units) and search retrieved chunks
+  │  └─ flag any number not directly grounded
+  ▼
+Final answer + telemetry
+  (routing_decision, confidence_score, tier_used,
+   sub_q_coverage, numerical_fidelity, α used)
+```
+
+**v2-only / v3-only details:** v2 retains web fallback for decomposed sub-questions (web noise can leak into multimodal answers); v3 suppresses it. Both versions also ship an **α-ensemble inference** mode (`v2/scripts/alpha_ensemble.py`, same in v3) that runs the evaluator across α ∈ {0.0, 0.2, 0.4, 0.6, 0.8, 1.0} and reports stability buckets — useful for understanding how robust each routing decision is to the cosine ↔ cross-encoder weighting choice. See [`v2/README.md`](./v2/README.md) and [`v3/README.md`](./v3/README.md) for run-time details and the corresponding scripts.
 
 ---
 
@@ -250,6 +376,85 @@ This project uses a mix of **fail-fast checks**, **logged degradation**, and **o
 - **Smoke test.** `smoke_test.py` validates Groq connectivity with explicit exit codes and hints when the model id is deprecated or unavailable.
 
 Together, these behaviors prioritize **continued operation with degraded features** (skip bad filings, fall back to simpler retrieval text, optional second LLM provider) while still **failing loudly** on missing mandatory configuration for the task at hand (e.g. SEC user-agent, primary LLM key).
+
+---
+
+## Tests & CI/CD
+
+Unit tests for the project's pure-Python helpers (`_bootstrap_ci`, `keyword_hit_rate`, `_check_numerical_fidelity`, `_parse_multi_score`, eval-questions schema):
+
+```bash
+pip install pytest
+pytest tests/ -v
+```
+
+48 tests across 5 files. Tests that depend on heavy ML dependencies (`sentence_transformers`, `faiss`, `torch`) skip cleanly via `pytest.importorskip` when those aren't installed — useful for minimal CI environments. See [`tests/README.md`](./tests/README.md) for details.
+
+### Continuous Integration
+
+A GitHub Actions workflow at [`.github/workflows/tests.yml`](./.github/workflows/tests.yml) runs three jobs on every push and pull request to `main`:
+
+| Job | What it runs | Why |
+|---|---|---|
+| **pytest** | Full test suite × Python 3.10 / 3.11 / 3.12 matrix, with coverage report | Catches version-specific regressions; coverage XML uploaded as artifact |
+| **lint** | `ruff check tests/` (E, W, F rule families) | Surfaces style and unused-import issues without blocking the build |
+| **validate-data** | Schema-only test subset against `data/eval_questions.json` | Fast guard against eval-bank regressions (no ML deps required, runs in <10s) |
+
+Concurrency control cancels in-flight workflow runs when a new commit is pushed to the same branch (saves CI minutes during rapid iteration). Pip cache is keyed on Python version to avoid redundant downloads. Manual triggering enabled via `workflow_dispatch`.
+
+Two production bugs were originally surfaced by this test suite — a `None`-handling crash in `keyword_hit_rate` and a normalization gap in `_check_numerical_fidelity` — both fixed before final results were reported, demonstrating the test-driven feedback loop.
+
+---
+
+## Analysis notebook
+
+The Jupyter notebook at [`notebooks/results_analysis.ipynb`](./notebooks/results_analysis.ipynb) walks through the v1/v2/v3 ablation CSVs end-to-end: regenerates the headline KHR table, computes bootstrap 95% CIs, plots KHR by question type, surfaces v2→v3 deltas, and shows the edge-case category breakdown. Run from the repo root:
+
+```bash
+pip install jupyter matplotlib
+jupyter notebook notebooks/results_analysis.ipynb
+```
+
+---
+
+## Troubleshooting Guide
+
+### Environment & dependencies
+
+- **`Warning: camelot-py … does not provide the extra 'cv'`**
+  This comes from the `[cv]` extra in `requirements.txt` on some `camelot-py` versions. It is usually harmless if installs completed; if table extraction still fails, reinstall `camelot-py` per its current docs.
+
+### API keys & LLM
+
+- **`RuntimeError: GROQ_API_KEY is not set`** (or similar for other providers)
+  Copy `.env.example` → `.env` and fill in real keys. Restart the terminal / IDE so `python-dotenv` picks up changes.
+
+- **429 / rate limit / timeouts during `evaluate.py` or the Streamlit demo**
+  Increase sleep between questions in `evaluate.py` if needed, or set `LLM_FALLBACK_PROVIDER=gemini` (with `GEMINI_API_KEY` / `GOOGLE_API_KEY`) so transient limits on the primary provider fail over automatically.
+
+### SEC data & indexing
+
+- **`RuntimeError: SEC_EDGAR_USER_AGENT is not set`**
+  SEC requires a real contact email in the User-Agent. Set `SEC_EDGAR_USER_AGENT=you@example.com` in `.env` before `python data_fetcher.py`.
+
+- **Downloads warn `Failed to download …` for some tickers**
+  Check network, SEC availability, and that you are not blocked for excessive requests. The script logs warnings and continues; verify files under `data/sec_filings/…`.
+
+### CRAG / web / demo
+
+- **Web search never triggers or always empty context**
+  Set `TAVILY_API_KEY` in `.env`. Without it, `WebSearchFallback` logs a warning and returns no web passages (corpus-only behavior).
+
+- **Streamlit crashes or hangs on macOS / Python 3.13 with PyTorch**
+  Set threading-related variables as in `.env.example` (`OMP_NUM_THREADS`, `MKL_NUM_THREADS`, `TOKENIZERS_PARALLELISM`, etc.). On Unix, `run.sh` exports them before launching Streamlit; on Windows, add the same keys to `.env` or set them in the shell before `streamlit run app.py`.
+
+### Evaluation & judging
+
+- **`evaluate.py` exits early: `expected pre-built indexes …`**
+  Build both indexes with `rag_baseline.py` (see above). Paths must exist: `data/vectordb_baseline` and `data/vectordb_crag_tables`.
+
+- **`judge_results.py` fails or skips rows**
+  Ensure the judge provider's API key and model access match your `.env` configuration; the script is designed to skip already-scored rows and write incrementally — check logs for parse/API errors.
 
 ---
 

@@ -31,13 +31,3 @@ reviewed), and implement the LLM-as-judge scorer.
   LLM-as-judge on each row (multi-criteria: correctness, faithfulness,
   helpfulness), append the scores and reasoning. Use Gemini-2.5-Flash
   via OpenAI-compatible endpoint as the judge.*
-
-## Known limitations
-
-- N=22 is small; per-cell N is 4–8, so confidence intervals on the
-  headline numbers are wide.
-- Keyword scoring is brittle in places (3 keywords per question;
-  some are very loose, some are time-sensitive named entities).
-- The LLM judge introduces its own bias; mitigated by using a more
-  capable judge model and multi-criteria scoring, but a calibrated
-  judge or human-graded subset is not provided.

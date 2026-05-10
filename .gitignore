@@ -21,6 +21,16 @@ __pycache__/
 .venv/
 venv/
 env/
+.pytest_cache/
+pytest-cache-files-*/
+.ruff_cache/
+.mypy_cache/
+
+# Anaconda Navigator artifacts
+anaconda_projects/
+
+# Jupyter
+.ipynb_checkpoints/
 
 # OS / editor
 .DS_Store
