@@ -2,7 +2,6 @@
 
 [![tests](https://github.com/AlisaHe94/crag-financial-qa/actions/workflows/tests.yml/badge.svg)](https://github.com/AlisaHe94/crag-financial-qa/actions/workflows/tests.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
 **STAT 5293 Final Project** — Dishen Yang, Siwen Chen, Jiayi He
 
@@ -62,7 +61,6 @@ The 22-question v1 run is preserved in [`v1/`](./v1/) as a historical first pass
 ```
 STAT 5293 Proj Proposal/
 ├── README.md              # this file (project overview + headline results)
-├── LICENSE                # MIT license
 ├── AI_USAGE.md            # GenAI tool disclosure
 ├── prompts/               # per-component prompt summaries (one file per code module)
 ├── requirements.txt       # Python dependencies (shared across all three versions)
